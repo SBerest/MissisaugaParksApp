@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinatorLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".FilterActivity">
+
+    <!-- First Row -->
+
+    <ImageButton
+        android:id="@+id/filterBaseballButton"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:adjustViewBounds="true"
+        android:background="?android:attr/selectableItemBackground"
+        android:layout_marginTop="25dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintEnd_toStartOf="@id/filterBasketballButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/baseball" />
+
+    <ImageButton
+        android:id="@+id/filterBasketballButton"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:adjustViewBounds="true"
+        android:background="?android:attr/selectableItemBackground"
+        android:layout_marginTop="25dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintEnd_toStartOf="@id/filterBocceButton"
+        app:layout_constraintStart_toEndOf="@id/filterBaseballButton"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/basketball" />
+
+    <ImageButton
+        android:id="@+id/filterBocceButton"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:adjustViewBounds="true"
+        android:background="?android:attr/selectableItemBackground"
+        android:layout_marginTop="25dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintEnd_toStartOf="@id/filterCricketButton"
+        app:layout_constraintStart_toEndOf="@id/filterBasketballButton"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/bocce" />
+
+    <ImageButton
+        android:id="@+id/filterCricketButton"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:adjustViewBounds="true"
+        android:background="?android:attr/selectableItemBackground"
+        android:layout_marginTop="25dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintEnd_toStartOf="@id/filterRinkButton"
+        app:layout_constraintStart_toEndOf="@id/filterBocceButton"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/cricket" />
+
+    <ImageButton
+        android:id="@+id/filterRinkButton"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:adjustViewBounds="true"
+        android:background="?android:attr/selectableItemBackground"
+        android:layout_marginTop="25dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/filterCricketButton"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/rink" />
+
+    <!-- Second Row -->
+
+    <ImageButton
+        android:id="@+id/filterPlaysiteButton"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:adjustViewBounds="true"
+        android:background="?android:attr/selectableItemBackground"
+        android:layout_marginTop="25dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintEnd_toEndOf="@id/filterBaseballButton"
+        app:layout_constraintStart_toStartOf="@id/filterBaseballButton"
+        app:layout_constraintTop_toBottomOf="@id/filterBaseballButton"
+        app:srcCompat="@drawable/playsite" />
+
+    <ImageButton
+        android:id="@+id/filterSoccerButton"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:adjustViewBounds="true"
+        android:background="?android:attr/selectableItemBackground"
+        android:layout_marginTop="25dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintEnd_toEndOf="@id/filterBasketballButton"
+        app:layout_constraintStart_toStartOf="@id/filterBasketballButton"
+        app:layout_constraintTop_toBottomOf="@id/filterBasketballButton"
+        app:srcCompat="@drawable/soccer" />
+
+    <ImageButton
+        android:id="@+id/filterSoftballButton"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:adjustViewBounds="true"
+        android:background="?android:attr/selectableItemBackground"
+        android:layout_marginTop="25dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintEnd_toEndOf="@id/filterBocceButton"
+        app:layout_constraintStart_toStartOf="@id/filterBocceButton"
+        app:layout_constraintTop_toBottomOf="@id/filterBasketballButton"
+        app:srcCompat="@drawable/softball" />
+
+    <ImageButton
+        android:id="@+id/filterSpraypadButton"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:adjustViewBounds="true"
+        android:background="?android:attr/selectableItemBackground"
+        android:layout_marginTop="25dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintEnd_toEndOf="@id/filterCricketButton"
+        app:layout_constraintStart_toStartOf="@id/filterCricketButton"
+        app:layout_constraintTop_toBottomOf="@id/filterCricketButton"
+        app:srcCompat="@drawable/spraypad" />
+
+    <ImageButton
+        android:id="@+id/filterTennisButton"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:adjustViewBounds="true"
+        android:background="?android:attr/selectableItemBackground"
+        android:layout_marginTop="25dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintEnd_toEndOf="@id/filterRinkButton"
+        app:layout_constraintStart_toStartOf="@id/filterRinkButton"
+        app:layout_constraintTop_toBottomOf="@id/filterRinkButton"
+        app:srcCompat="@drawable/tennis" />
+    <TextView
+        android:id="@+id/locationText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/user_locations"
+        android:layout_marginTop="30dp"
+        android:textSize="24sp"
+        app:layout_constraintTop_toBottomOf="@id/filterPlaysiteButton"
+       app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/filterLocationText0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/_1st"
+        android:textSize="16sp"
+        app:layout_constraintTop_toTopOf="@id/aroundButton0"
+        app:layout_constraintBottom_toBottomOf="@id/aroundButton0"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/filterAddress0"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:text="@string/location_not_entered"
+        android:textSize="14sp"
+        app:layout_constraintTop_toTopOf="@id/aroundButton0"
+        app:layout_constraintBottom_toBottomOf="@id/aroundButton0"
+        app:layout_constraintStart_toEndOf="@id/filterLocationText0"
+        tools:layout_editor_absoluteY="212dp" />
+
+    <ImageButton
+        android:id="@+id/aroundButton0"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:layout_marginTop="20dp"
+        android:scaleType="centerInside"
+        app:layout_constraintBottom_toBottomOf="@id/partPolygon0"
+        app:layout_constraintEnd_toStartOf="@id/partPolygon0"
+        app:layout_constraintStart_toStartOf="@id/filterSpraypadButton"
+        app:layout_constraintTop_toBottomOf="@+id/locationText"
+        app:srcCompat="@drawable/not_around_location" />
+
+    <ImageButton
+        android:id="@+id/notAroundButton0"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:layout_marginTop="20dp"
+        android:scaleType="centerInside"
+        app:layout_constraintBottom_toBottomOf="@id/partPolygon0"
+        app:layout_constraintEnd_toStartOf="@id/partPolygon0"
+        app:layout_constraintStart_toStartOf="@id/filterSpraypadButton"
+        app:layout_constraintTop_toBottomOf="@+id/locationText"
+        app:srcCompat="@drawable/not" />
+
+    <ImageButton
+        android:id="@+id/partPolygon0"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
+        android:scaleType="centerInside"
+        app:layout_constraintBottom_toBottomOf="@id/filterAddress0"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/aroundButton0"
+        app:srcCompat="@drawable/not_part_polygon" />
+
+    <ImageButton
+        android:id="@+id/notPartPolygon0"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
+        android:scaleType="centerInside"
+        app:layout_constraintBottom_toBottomOf="@id/filterAddress0"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/aroundButton0"
+        app:srcCompat="@drawable/not" />
+
+    <Button
+        android:id="@+id/filterButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/apply_filter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/filterLocationText1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/_2nd"
+        android:textSize="16sp"
+        app:layout_constraintTop_toTopOf="@id/aroundButton1"
+        app:layout_constraintBottom_toBottomOf="@id/aroundButton1"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/filterAddress1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:text="@string/location_not_entered"
+        android:textSize="14sp"
+        app:layout_constraintTop_toTopOf="@id/aroundButton1"
+        app:layout_constraintBottom_toBottomOf="@id/aroundButton1"
+        app:layout_constraintStart_toEndOf="@id/filterLocationText1"
+        tools:layout_editor_absoluteY="212dp" />
+
+    <ImageButton
+        android:id="@+id/aroundButton1"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:layout_marginTop="20dp"
+        android:scaleType="centerInside"
+        app:layout_constraintBottom_toBottomOf="@id/partPolygon1"
+        app:layout_constraintEnd_toStartOf="@id/partPolygon1"
+        app:layout_constraintStart_toStartOf="@id/filterSpraypadButton"
+        app:layout_constraintTop_toBottomOf="@+id/aroundButton0"
+        app:srcCompat="@drawable/not_around_location" />
+
+    <ImageButton
+        android:id="@+id/notAroundButton1"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:layout_marginTop="20dp"
+        android:scaleType="centerInside"
+        app:layout_constraintBottom_toBottomOf="@id/partPolygon1"
+        app:layout_constraintEnd_toStartOf="@id/partPolygon1"
+        app:layout_constraintStart_toStartOf="@id/filterSpraypadButton"
+        app:layout_constraintTop_toBottomOf="@+id/aroundButton0"
+        app:srcCompat="@drawable/not" />
+
+    <ImageButton
+        android:id="@+id/partPolygon1"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
+        android:scaleType="centerInside"
+        app:layout_constraintBottom_toBottomOf="@id/filterAddress1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/aroundButton1"
+        app:srcCompat="@drawable/not_part_polygon" />
+
+    <ImageButton
+        android:id="@+id/notPartPolygon1"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
+        android:scaleType="centerInside"
+        app:layout_constraintBottom_toBottomOf="@id/filterAddress1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/aroundButton1"
+        app:srcCompat="@drawable/not" />
+
+    <TextView
+        android:id="@+id/filterLocationText2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/_3rd"
+        android:textSize="16sp"
+        app:layout_constraintTop_toTopOf="@id/aroundButton2"
+        app:layout_constraintBottom_toBottomOf="@id/aroundButton2"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/filterAddress2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:text="@string/location_not_entered"
+        android:textSize="14sp"
+        app:layout_constraintTop_toTopOf="@id/aroundButton2"
+        app:layout_constraintBottom_toBottomOf="@id/aroundButton2"
+        app:layout_constraintStart_toEndOf="@id/filterLocationText2"
+        tools:layout_editor_absoluteY="212dp" />
+
+    <ImageButton
+        android:id="@+id/aroundButton2"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:layout_marginTop="20dp"
+        android:scaleType="centerInside"
+        app:layout_constraintBottom_toBottomOf="@id/partPolygon2"
+        app:layout_constraintEnd_toStartOf="@id/partPolygon2"
+        app:layout_constraintStart_toStartOf="@id/filterSpraypadButton"
+        app:layout_constraintTop_toBottomOf="@+id/aroundButton1"
+        app:srcCompat="@drawable/not_around_location" />
+
+    <ImageButton
+        android:id="@+id/notAroundButton2"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:layout_marginTop="20dp"
+        android:scaleType="centerInside"
+        app:layout_constraintBottom_toBottomOf="@id/partPolygon2"
+        app:layout_constraintEnd_toStartOf="@id/partPolygon2"
+        app:layout_constraintStart_toStartOf="@id/filterSpraypadButton"
+        app:layout_constraintTop_toBottomOf="@+id/aroundButton1"
+        app:srcCompat="@drawable/not" />
+
+    <ImageButton
+        android:id="@+id/partPolygon2"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
+        android:scaleType="centerInside"
+        app:layout_constraintBottom_toBottomOf="@id/filterAddress2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/aroundButton2"
+        app:srcCompat="@drawable/not_part_polygon" />
+
+    <ImageButton
+        android:id="@+id/notPartPolygon2"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
+        android:scaleType="centerInside"
+        app:layout_constraintBottom_toBottomOf="@id/filterAddress2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/aroundButton2"
+        app:srcCompat="@drawable/not" />
+
+
+    <TextView
+        android:id="@+id/filterLocationText3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/_4th"
+        android:textSize="16sp"
+        app:layout_constraintTop_toTopOf="@id/aroundButton3"
+        app:layout_constraintBottom_toBottomOf="@id/aroundButton3"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/filterAddress3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:text="@string/location_not_entered"
+        android:textSize="14sp"
+        app:layout_constraintTop_toTopOf="@id/aroundButton3"
+        app:layout_constraintBottom_toBottomOf="@id/aroundButton3"
+        app:layout_constraintStart_toEndOf="@id/filterLocationText3"
+        tools:layout_editor_absoluteY="212dp" />
+
+    <ImageButton
+        android:id="@+id/aroundButton3"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:layout_marginTop="20dp"
+        android:scaleType="centerInside"
+        app:layout_constraintBottom_toBottomOf="@id/partPolygon3"
+        app:layout_constraintEnd_toStartOf="@id/partPolygon3"
+        app:layout_constraintStart_toStartOf="@id/filterSpraypadButton"
+        app:layout_constraintTop_toBottomOf="@+id/aroundButton2"
+        app:srcCompat="@drawable/not_around_location" />
+
+    <ImageButton
+        android:id="@+id/notAroundButton3"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:layout_marginTop="20dp"
+        android:scaleType="centerInside"
+        app:layout_constraintBottom_toBottomOf="@id/partPolygon3"
+        app:layout_constraintEnd_toStartOf="@id/partPolygon3"
+        app:layout_constraintStart_toStartOf="@id/filterSpraypadButton"
+        app:layout_constraintTop_toBottomOf="@+id/aroundButton2"
+        app:srcCompat="@drawable/not" />
+
+    <ImageButton
+        android:id="@+id/partPolygon3"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
+        android:scaleType="centerInside"
+        app:layout_constraintBottom_toBottomOf="@id/filterAddress3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/aroundButton3"
+        app:srcCompat="@drawable/not_part_polygon" />
+
+    <ImageButton
+        android:id="@+id/notPartPolygon3"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
+        android:scaleType="centerInside"
+        app:layout_constraintBottom_toBottomOf="@id/filterAddress3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/aroundButton3"
+        app:srcCompat="@drawable/not" />
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
