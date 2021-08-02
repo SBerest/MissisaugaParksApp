@@ -165,10 +165,9 @@ public class FilterActivity extends AppCompatActivity implements View.OnClickLis
         addresses.add(findViewById(R.id.filterAddress2));
         addresses.add(findViewById(R.id.filterAddress3));
 
-        toRet.add(0,new Location(userWrapper.getUserLocationPoints().get(0)));
-        toRet.add(1,new Location(userWrapper.getUserLocationPoints().get(1)));
-        toRet.add(2,new Location(userWrapper.getUserLocationPoints().get(2)));
-        toRet.add(3,new Location(userWrapper.getUserLocationPoints().get(3)));
+        for(int i = 0; i < userWrapper.getUserLocationPoints().size(); i++){
+            toRet.add(i,new Location(userWrapper.getUserLocationPoints().get(i)));
+        }
 
         for(int i = 0; i < userWrapper.getUserLocationPoints().size(); i++){
             addresses.get(i).setText(R.string.Searching);
