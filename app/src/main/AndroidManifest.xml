@@ -18,7 +18,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.GGR494">
+        android:theme="@style/Theme.GGR494"
+        android:name=".ManagingClass">
         <activity
             android:name=".FilterActivity"
             android:label="@string/title_activity_filter"

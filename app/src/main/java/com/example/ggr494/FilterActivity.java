@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -35,13 +36,10 @@ public class FilterActivity extends AppCompatActivity implements View.OnClickLis
     private static final int NUMCORNERS = 4;
 
     ArrayList<Park> allParks;
-    parksWrapper parksToDrawWrapper;
+    ArrayList<Park> parksToDraw;
 
     private AlertDialog.Builder dialogBuilder;
     private AlertDialog dialog;
-
-    private TextView amenityHigh;
-    private SeekBar amenitySeekBar;
 
     private Menu menu;
     ImageButton baseballButton;
@@ -58,15 +56,15 @@ public class FilterActivity extends AppCompatActivity implements View.OnClickLis
     ArrayList <ImageButton> aroundButtons = new ArrayList<>();
     ArrayList<Boolean> aroundStates = new ArrayList<>();
 
-    ArrayList <ImageButton> partButtons = new ArrayList<>();;
+    ArrayList <ImageButton> partButtons = new ArrayList<>();
     ArrayList<Boolean> partStates = new ArrayList<>();
 
     Button filterButton;
 
-    pointsWrapper userWrapper;
     ArrayList<Location> userLocations;
+    ArrayList<ImageButton> buttons = new ArrayList<>();
 
-    ArrayList<Integer> amenityFilter = new ArrayList<>();
+    ArrayList<Integer> amenityFilter;
     Hashtable<Integer, Pair<Integer, ImageButton>> buttonAmenityDictionary = new Hashtable<>();
 
     @Override
@@ -74,152 +72,104 @@ public class FilterActivity extends AppCompatActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter);
 
-        //get all parks
-        Intent intent = getIntent();
-        parksWrapper parkWrap = (parksWrapper) intent.getSerializableExtra("allParks");
-        if(parkWrap != null)
-            allParks = parkWrap.getParks();
-        else
-            Log.d(TAG,"Park Wrap is null");
-
-        //reset amenity filter
-        for(int i = 0; i < 10; i++){
-            amenityFilter.add(0);
-        }
+        //get parks
+        allParks = ((ManagingClass)getApplicationContext()).allParks;
+        parksToDraw = new ArrayList<>(allParks);
+        userLocations = ((ManagingClass) getApplicationContext()).userLocations;
 
         //Declare Buttons
         baseballButton = findViewById(R.id.filterBaseballButton);
         baseballButton.setOnClickListener(this);
         baseballButton.setOnLongClickListener(this);
         baseballButton.setBackgroundColor(Color.TRANSPARENT);
+        buttons.add(baseballButton);
 
         basketballButton = findViewById(R.id.filterBasketballButton);
         basketballButton.setOnClickListener(this);
         basketballButton.setOnLongClickListener(this);
         basketballButton.setBackgroundColor(Color.TRANSPARENT);
+        buttons.add(basketballButton);
 
         bocceButton = findViewById(R.id.filterBocceButton);
         bocceButton.setOnClickListener(this);
         bocceButton.setOnLongClickListener(this);
         bocceButton.setBackgroundColor(Color.TRANSPARENT);
+        buttons.add(bocceButton);
 
         cricketButton = findViewById(R.id.filterCricketButton);
         cricketButton.setOnClickListener(this);
         cricketButton.setOnLongClickListener(this);
         cricketButton.setBackgroundColor(Color.TRANSPARENT);
+        buttons.add(cricketButton);
 
         rinkButton = findViewById(R.id.filterRinkButton);
         rinkButton.setOnClickListener(this);
         rinkButton.setOnLongClickListener(this);
         rinkButton.setBackgroundColor(Color.TRANSPARENT);
+        buttons.add(rinkButton);
+
 
         playsiteButton = findViewById(R.id.filterPlaysiteButton);
         playsiteButton.setOnClickListener(this);
         playsiteButton.setOnLongClickListener(this);
         playsiteButton.setBackgroundColor(Color.TRANSPARENT);
+        buttons.add(playsiteButton);
 
         soccerButton = findViewById(R.id.filterSoccerButton);
         soccerButton.setOnClickListener(this);
         soccerButton.setOnLongClickListener(this);
         soccerButton.setBackgroundColor(Color.TRANSPARENT);
+        buttons.add(soccerButton);
 
         softballButton = findViewById(R.id.filterSoftballButton);
         softballButton.setOnClickListener(this);
         softballButton.setOnLongClickListener(this);
         softballButton.setBackgroundColor(Color.TRANSPARENT);
+        buttons.add(softballButton);
 
         spraypadButton = findViewById(R.id.filterSpraypadButton);
         spraypadButton.setOnClickListener(this);
         spraypadButton.setOnLongClickListener(this);
         spraypadButton.setBackgroundColor(Color.TRANSPARENT);
+        buttons.add(spraypadButton);
 
         tennisButton = findViewById(R.id.filterTennisButton);
         tennisButton.setOnClickListener(this);
         tennisButton.setOnLongClickListener(this);
         tennisButton.setBackgroundColor(Color.TRANSPARENT);
+        buttons.add(tennisButton);
 
         filterButton = findViewById(R.id.filterButton);
         filterButton.setOnClickListener(this);
 
-        //get all user inputted locations
-        userWrapper = (pointsWrapper) intent.getSerializableExtra("userLocations");
-        try {
-            assert userWrapper != null;
-            userLocations = unwrapUserWrap(userWrapper);
-        } catch (IOException e) {
-            e.printStackTrace();
+        //reset amenity filter
+        amenityFilter = ((ManagingClass) getApplicationContext()).amenityFilter;
+        Log.d(TAG,"AmenityFilter"+amenityFilter);
+        if(amenityFilter.size() == 0) {
+            for (int i = 0; i < 10; i++) {
+                amenityFilter.add(0);
+            }
+        }
+        else{
+            colorButtons();
         }
 
         //set up and declare around and part buttons
-        makeAroundButtons();
-        makePartButtons();
+        if(userLocations != null && userLocations.size() != 0) {
+            makeAroundButtons();
+            makePartButtons();
+            assignAddresses();
+        }
 
         fillHashTable();
     }
-    private ArrayList<Location> unwrapUserWrap(pointsWrapper userWrapper) throws IOException {
-        ArrayList<Location> toRet = new ArrayList();
 
-        ArrayList<TextView> addresses = new ArrayList();
-        addresses.add(findViewById(R.id.filterAddress0));
-        addresses.add(findViewById(R.id.filterAddress1));
-        addresses.add(findViewById(R.id.filterAddress2));
-        addresses.add(findViewById(R.id.filterAddress3));
-
-        for(int i = 0; i < userWrapper.getUserLocationPoints().size(); i++){
-            toRet.add(i,new Location(userWrapper.getUserLocationPoints().get(i)));
-        }
-
-        for(int i = 0; i < userWrapper.getUserLocationPoints().size(); i++){
-            addresses.get(i).setText(R.string.Searching);
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            if (userWrapper.getUserLocationPoints().size() > 0) {
-                new Thread(() -> {
-                    try {
-                        final String address0 = Arrays.asList(toRet.get(0).getmAddress().split(",")).get(0);
-                        runOnUiThread(() -> addresses.get(0).setText(address0));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }).start();
-            }
-
-            if (userWrapper.getUserLocationPoints().size() > 1) {
-                new Thread(() -> {
-                    try {
-                        final String address1 = Arrays.asList(toRet.get(1).getmAddress().split(",")).get(0);
-                        runOnUiThread(() -> addresses.get(1).setText(address1));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }).start();
-            }
-
-            if (userWrapper.getUserLocationPoints().size() > 2) {
-                new Thread(() -> {
-                    try {
-                        final String address0 = Arrays.asList(toRet.get(2).getmAddress().split(",")).get(0);
-                        runOnUiThread(() -> addresses.get(2).setText(address0));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }).start();
-            }
-
-            if (userWrapper.getUserLocationPoints().size() > 3) {
-                new Thread(() -> {
-                    try {
-                        final String address0 = Arrays.asList(toRet.get(3).getmAddress().split(",")).get(0);
-                        runOnUiThread(() -> addresses.get(3).setText(address0));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }).start();
+    private void colorButtons() {
+        for(int i = 0; i < buttons.size(); i++) {
+            if (amenityFilter.get(i) > 0) {
+                buttons.get(i).setBackgroundColor(getResources().getColor(R.color.purple_700));
             }
         }
-
-        return toRet;
     }
 
     private void makeAroundButtons() {
@@ -300,6 +250,26 @@ public class FilterActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+
+    private void assignAddresses() {
+        ArrayList<TextView> addresses = new ArrayList<>();
+        addresses.add(findViewById(R.id.filterAddress0));
+        addresses.add(findViewById(R.id.filterAddress1));
+        addresses.add(findViewById(R.id.filterAddress2));
+        addresses.add(findViewById(R.id.filterAddress3));
+
+        switch (userLocations.size()){
+            case 4:
+                addresses.get(3).setText(userLocations.get(3).getAddress().split(",")[0]);
+            case 3:
+                addresses.get(2).setText(userLocations.get(2).getAddress().split(",")[0]);
+            case 2:
+                addresses.get(1).setText(userLocations.get(1).getAddress().split(",")[0]);
+            case 1:
+                addresses.get(0).setText(userLocations.get(0).getAddress().split(",")[0]);
+        }
+    }
+
     private void fillHashTable() {
         buttonAmenityDictionary.put(R.id.filterBaseballButton,new Pair<>(0,baseballButton));
         buttonAmenityDictionary.put(R.id.filterBasketballButton,new Pair<>(1,basketballButton));
@@ -325,6 +295,8 @@ public class FilterActivity extends AppCompatActivity implements View.OnClickLis
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.d(TAG, "onOptionsItemSelected");
         if (item.getItemId() == R.id.action_map) {
+            for(int i = 0; i < amenityFilter.size(); i++)
+                amenityFilter.set(i,0);
             goToMap();
         }
         return true;
@@ -332,11 +304,7 @@ public class FilterActivity extends AppCompatActivity implements View.OnClickLis
 
     private void goToMap() {
         Log.d(TAG, "To Map");
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("filteredParks", parksToDrawWrapper);
-        intent.putExtra("test","Returned from Filter");
-        intent.putExtra("userLocations",new pointsWrapper(userLocations,true));
-        startActivity(intent);
+        onBackPressed();
     }
 
     @Override
@@ -344,7 +312,6 @@ public class FilterActivity extends AppCompatActivity implements View.OnClickLis
         Log.d(TAG,"Clicked: "+v.getId());
         if(buttonAmenityDictionary.containsKey(v.getId())) {
             amenityFilter.set(buttonAmenityDictionary.get(v.getId()).first, amenityFilter.get(buttonAmenityDictionary.get(v.getId()).first) ^ 1);
-            Log.d(TAG,(amenityFilter.get(buttonAmenityDictionary.get(v.getId()).first) ^ 1)+"| Set to |"+amenityFilter.get(buttonAmenityDictionary.get(v.getId()).first));
             if (amenityFilter.get(buttonAmenityDictionary.get(v.getId()).first) == 0) {
                 Log.d(TAG,"Button Off");
                 buttonAmenityDictionary.get(v.getId()).second.setBackgroundColor(Color.TRANSPARENT);
@@ -402,11 +369,7 @@ public class FilterActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void filterParksPolygon() {
-        ArrayList<Park> parksToDraw;
-        if(parksToDrawWrapper != null)
-            parksToDraw = parksToDrawWrapper.getParks();
-        else
-            parksToDraw = allParks;
+        Log.d(TAG,"StartparksToDrawSizeFilterParksPoly:"+parksToDraw.size());
         if(userLocations.size() == 2){
             Double lon0 = userLocations.get(0).getmPoint().getLongitude();
             Double lat0 = userLocations.get(1).getmPoint().getLatitude();
@@ -421,7 +384,7 @@ public class FilterActivity extends AppCompatActivity implements View.OnClickLis
                         newParksToDraw.add(park);
                 }
             }
-            parksToDrawWrapper = new parksWrapper(newParksToDraw);
+            parksToDraw = newParksToDraw;
         }
         else if(userLocations.size() > 2){
             GeoPoint[] corners = new GeoPoint[userLocations.size()];
@@ -432,13 +395,13 @@ public class FilterActivity extends AppCompatActivity implements View.OnClickLis
             Log.d(TAG,parksToDraw.size()+"");
 
             for(Park park:parksToDraw) {
-                GeoPoint parkGeo = new GeoPoint(park.getmLatitude(),park.getmLongitude());
-                if(isInside(corners, userLocations.size(), parkGeo)){
+                if(isInside(corners, userLocations.size(), park.getmLocation())){
                     newParksToDraw.add(park);
                 }
             }
-            parksToDrawWrapper = new parksWrapper((newParksToDraw));
+            parksToDraw = newParksToDraw;
         }
+        Log.d(TAG,"EndparksToDrawSizeFilterParksPoly:"+parksToDraw.size());
     }
 
     //Change icon, add buffer filter thing i is position in arraylist of button
@@ -495,65 +458,46 @@ public class FilterActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void filterParksAround(){
-        ArrayList<Park> parksToDraw;
-        if(parksToDrawWrapper != null)
-            parksToDraw = parksToDrawWrapper.getParks();
-        else
-            parksToDraw = allParks;
-        ArrayList<Park> nextParksToDraw = new ArrayList<>();
+        Log.d(TAG,"StartparksToDrawSizeFilterParksAround:"+parksToDraw.size());
+        ArrayList<Park> newParksToDraw = new ArrayList<>();
         for(Location location:userLocations){
             Log.d(TAG,"Distance for this location:"+location.getmSelectedDist());
-            for(Park park: parksToDraw){
-                if(withinDist(location.getmPoint(), park.getmLocation(), location.getmSelectedDist())){
-                    if(!nextParksToDraw.contains(park))
-                        nextParksToDraw.add(park);
-                }
+            for(Park park: parksToDraw) {
+                if (withinDist(location.getmPoint(), park.getmLocation(), location.getmSelectedDist()))
+                    newParksToDraw.add(park);
             }
-            parksToDraw = new ArrayList<>(nextParksToDraw);
+            parksToDraw = newParksToDraw;
         }
-        parksToDrawWrapper = new parksWrapper(nextParksToDraw);
+        Log.d(TAG,"EndparksToDrawSizeFilterParksAround:"+parksToDraw.size());
     }
 
     private void filterParksByAmenity() {
-        Log.d(TAG,amenityFilter.toString());
-        ArrayList<Park> parksToDraw = new ArrayList<>();
-
+        Log.d(TAG,"StartparksToDrawSizefilterParksByAmenity:"+parksToDraw.size());
         int amountOfFilters = 0;
         for(int i = 0; i<10; i++){
             if(amenityFilter.get(i) != 0){
                 amountOfFilters++;
             }
         }
-
-        for(int i = 0; i < allParks.size(); i++){
-            Park tempPark = allParks.get(i);
-            boolean showTempParks = false;
-            if(!tempPark.getmParkName().contains("NAMED") || showTempParks){
-                int amountOfAmenities = 0;
-                for(int j = 0; j < 10; j++) {
-                    if (amenityFilter.get(j) > 0 && amountOfAmenities < amountOfFilters) {
-                        if (tempPark.getmAmenityAmounts().get(j) >= amenityFilter.get(j)) {
-                            amountOfAmenities++;
-                            Log.d(TAG, tempPark+" counted "+amountOfAmenities+"/"+amountOfFilters);
-                            if(amountOfAmenities == amountOfFilters) {
-                                parksToDraw.add(tempPark);
-                            }
-                        }
+        ArrayList<Park> newParksToDraw = new ArrayList<>();
+        for(Park park:parksToDraw){
+            int amountOfAmenities = 0;
+            for(int j = 0; j < 10; j++)
+                if (amenityFilter.get(j) > 0 && amountOfAmenities < amountOfFilters)
+                    if (park.getmAmenityAmounts().get(j) >= amenityFilter.get(j)) {
+                        amountOfAmenities++;
+                        if(amountOfAmenities == amountOfFilters)
+                            newParksToDraw.add(park);
                     }
-                }
-            }
         }
-        for(int i = 0; i < parksToDraw.size(); i++)
-            Log.d(TAG,parksToDraw.get(i)+" "+parksToDraw.get(i).printAmenities());
-        if(parksToDraw.size() != 0)
-            parksToDrawWrapper = new parksWrapper(parksToDraw);
-        else
-            parksToDrawWrapper = null;
+        parksToDraw = newParksToDraw;
+        Log.d(TAG,"EndparksToDrawSizefilterParksByAmenity:"+parksToDraw.size());
     }
 
     @Override
     public void onBackPressed() {
-        Log.d(TAG,"Back Pressed");
+        ((ManagingClass)getApplicationContext()).parksToDraw = parksToDraw;
+        super.onBackPressed();
     }
 
     @Override
@@ -562,9 +506,8 @@ public class FilterActivity extends AppCompatActivity implements View.OnClickLis
 
         if(buttonAmenityDictionary.containsKey(v.getId())) {
             amenityFilter.set(buttonAmenityDictionary.get(v.getId()).first, 1);
-            Log.d(TAG,(amenityFilter.get(buttonAmenityDictionary.get(v.getId()).first) ^ 1)+"| Set to |"+amenityFilter.get(buttonAmenityDictionary.get(v.getId()).first));
             buttonAmenityDictionary.get(v.getId()).second.setBackgroundColor(getResources().getColor(R.color.purple_700));
-            createAmenityPopup(buttonAmenityDictionary.get(v.getId()).first);
+            createAmenityPopup(buttonAmenityDictionary.get(v.getId()));
         }
         else if(v.getId() == R.id.aroundButton0){
             enterKmPopup(0);
@@ -613,16 +556,19 @@ public class FilterActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    public void createAmenityPopup(int amenity){
+    public void createAmenityPopup(Pair<Integer,ImageButton> pair){
+        int amenity = pair.first;
         dialogBuilder = new AlertDialog.Builder(this);
         final View amenityPopupView = getLayoutInflater().inflate(R.layout.amenity_popup,null);
-        amenitySeekBar = amenityPopupView.findViewById(R.id.seekBar);
-        amenityHigh = amenityPopupView.findViewById(R.id.PopupAmenityHigh);
+        TextView amenityName = amenityPopupView.findViewById(R.id.PopupAmenityName);
+        SeekBar amenitySeekBar = amenityPopupView.findViewById(R.id.PopUpSeekBar);
+        TextView amenityHigh = amenityPopupView.findViewById(R.id.PopupAmenityHigh);
 
         dialogBuilder.setView(amenityPopupView);
         dialog = dialogBuilder.create();
         dialog.show();
         int highestAmount = getAmenityHigh(amenity);
+        amenityName.setText(parksToDraw.get(0).getAmenityName(amenity));
         amenityHigh.setText(getString(R.string.highestAmenity,highestAmount));
         amenitySeekBar.setMax(highestAmount);
         amenitySeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -639,6 +585,13 @@ public class FilterActivity extends AppCompatActivity implements View.OnClickLis
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 amenityFilter.set(amenity,seekBar.getProgress());
+                if(seekBar.getProgress() > 0){
+                    pair.second.setBackgroundColor(getResources().getColor(R.color.purple_700));
+                }
+                else{
+
+                    pair.second.setBackgroundColor(getResources().getColor(R.color.white));
+                }
             }
         });
     }
@@ -680,16 +633,12 @@ public class FilterActivity extends AppCompatActivity implements View.OnClickLis
 
         if (o1 != o2 && o3 != o4)
             return true;
-
         if (o1 == 0 && onSegment(p1, p2, q1))
             return true;
-
         if (o2 == 0 && onSegment(p1, q2, q1))
             return true;
-
         if (o3 == 0 && onSegment(p2, p1, q2))
             return true;
-
         if (o4 == 0 && onSegment(p2, q1, q2))
             return true;
 
@@ -705,8 +654,7 @@ public class FilterActivity extends AppCompatActivity implements View.OnClickLis
         GeoPoint extreme = new GeoPoint(INF, p.getLongitude());
 
         int count = 0, i = 0;
-        do
-        {
+        do{
             int next = (i + 1) % n;
             if (doIntersect(polygon[i], polygon[next], p, extreme))
             {
@@ -720,4 +668,5 @@ public class FilterActivity extends AppCompatActivity implements View.OnClickLis
 
         return (count & 1) == 1;
     }
+
 }

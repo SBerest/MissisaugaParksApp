@@ -37,7 +37,6 @@ public class Park implements Serializable {
         return this.mParkName +" on "+ this.mStreet +" is "+ this.mStatus +".";
     }
 
-
     public String getmParkName() {
         return mParkName;
     }
@@ -96,5 +95,20 @@ public class Park implements Serializable {
             toRet = new StringBuilder(toRet.substring(0, toRet.length() - 4));
         }
         return toRet.toString();
+    }
+
+    public String getAmenityName(int amenity){
+        ArrayList<String> amenityTitle = new ArrayList<>();
+        amenityTitle.add(" Baseball Field");
+        amenityTitle.add(" Basketball Court");
+        amenityTitle.add(" Bocceball Court");
+        amenityTitle.add(" Cricket Field");
+        amenityTitle.add(" Ice Rink");
+        amenityTitle.add(" Play Structure");
+        amenityTitle.add(" Soccer Field");
+        amenityTitle.add(" Softball Field");
+        amenityTitle.add(" Spray Pad");
+        amenityTitle.add(" Tennis Court");
+        return (amenityTitle.get(amenity));
     }
 }

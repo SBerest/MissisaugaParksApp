@@ -38,20 +38,25 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, MapEventsReceiver, Marker.OnMarkerClickListener{
 
     private static final String TAG = "MAIN";
-    parksWrapper allParks;
+    ArrayList<Park> allParks;
     ArrayList<Park> parksToDraw;
+    ArrayList<Location> userLocations;
     Menu menu;
     MapView map;
     ImageButton locationButton;
+    RadiusMarkerClusterer parkMarkers;
     ArrayList<Marker> userLocationMarkers = new ArrayList<>();
-    int buttonState = 0; //0 Unclicked, 1 Adding Points, 2 Removing Points
+    int buttonState = 0; //0 Un clicked, 1 Adding Points, 2 Removing Points
 
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        final double startingLatitude = 43.593;
+        final double startingLongitude = -79.67;
 
         //Setting up OSM
         org.osmdroid.config.IConfigurationProvider osmConf = org.osmdroid.config.Configuration.getInstance();
@@ -59,12 +64,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         osmConf.setOsmdroidBasePath(basePath);
         File tileCache = new File(osmConf.getOsmdroidBasePath().getAbsolutePath(), "tile");
         osmConf.setOsmdroidTileCache(tileCache);
-
-        setContentView(R.layout.activity_main);
-
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
+        setContentView(R.layout.activity_main);
         Context ctx = getApplicationContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
 
@@ -77,50 +80,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         IMapController mapController = map.getController(); 
         mapController.setZoom(10.8);
-        GeoPoint startPoint = new GeoPoint(43.593, -79.67);
+        GeoPoint startPoint = new GeoPoint(startingLatitude, startingLongitude);
         mapController.setCenter(startPoint);
 
-        //get all parks
-        allParks = readParksData();
-
-        Intent intent = getIntent();
-
-        parksWrapper parksToDrawWrapper = (parksWrapper) intent.getSerializableExtra("filteredParks");
-        if(parksToDrawWrapper != null) {
-            parksToDraw = parksToDrawWrapper.getParks();
-            parksToDraw = filterNotToBeNamed(parksToDraw);
-        }
-        else{
-            Log.d(TAG, "Park Wrap is null");
-            parksToDraw = filterNotToBeNamed(allParks);
-        }
-
-        //Get the user locations back from the filter tab
-        pointsWrapper userWrapper = (pointsWrapper) intent.getSerializableExtra("userLocations");
-        if(userWrapper != null) {
-            ArrayList<GeoPoint> userLocations = userWrapper.getUserLocationPoints();
-            for(GeoPoint p:userLocations){
-                Log.d(TAG,"New Marker");
-                Marker tempMarker = new Marker(map);
-                tempMarker.setPosition(p);
-                tempMarker.setTitle("User Location");
-                tempMarker.setIcon(getUserLocationDrawable(userLocationMarkers.size()));
-                tempMarker.setOnMarkerClickListener(this);
-                userLocationMarkers.add(tempMarker);
-                map.getOverlays().add(tempMarker);
-            }
-            map.invalidate();
-        }
+        //Setting the userLocation cycling button
+        locationButton = findViewById(R.id.locationButton);
+        locationButton.setOnClickListener(this);
 
         //Define the starting location
-        RadiusMarkerClusterer parkMarkers = new RadiusMarkerClusterer(this);
+        parkMarkers = new RadiusMarkerClusterer(this);
         parkMarkers.mTextAnchorU = 0.50f;
         parkMarkers.mTextAnchorV = 0.35f;
-        parkMarkers.setRadius(150);
+        parkMarkers.setRadius(100);
         map.getOverlays().add(parkMarkers);
 
-        Drawable parkIcon = ResourcesCompat.getDrawable(getResources(), R.drawable.park, null);
+        //get all parks
+        if(((ManagingClass)getApplicationContext()).allParks == null)
+            readParksData();
+        else
+            allParks = ((ManagingClass) getApplicationContext()).allParks;
+        parksToDraw = ((ManagingClass) getApplicationContext()).parksToDraw;
 
+
+        if(parksToDraw == null)
+            parksToDraw = allParks;
+
+        drawMap(parkMarkers);
+    }
+
+    public void drawMap(RadiusMarkerClusterer parkMarkers){
+        Drawable parkIcon = ResourcesCompat.getDrawable(getResources(), R.drawable.park, null);
         for (Park park:parksToDraw){
             Marker parkMarker = new Marker(map);
             parkMarker.setTitle(park.getmParkName());
@@ -132,37 +121,58 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         parkMarkers.setIcon(BitmapFactory.decodeResource(getResources(),R.drawable.marker_poi_cluster));
 
-        locationButton = findViewById(R.id.locationButton);
-        locationButton.setOnClickListener(this);
+        //Get the user locations back from the filter tab
+        userLocations = ((ManagingClass)getApplicationContext()).userLocations;
+        if(userLocations != null) {
+            for (Location p : userLocations) {
+                Log.d(TAG, "New Marker");
+                Marker tempMarker = new Marker(map);
+                tempMarker.setPosition(p.getmPoint());
+                tempMarker.setTitle("User Location");
+                tempMarker.setIcon(getUserLocationDrawable(userLocationMarkers.size()));
+                tempMarker.setOnMarkerClickListener(this);
+                userLocationMarkers.add(tempMarker);
+                map.getOverlays().add(tempMarker);
+            }
+            map.invalidate();
+        }
+        else {
+            userLocations = new ArrayList<>();
+            ((ManagingClass)getApplicationContext()).userLocations = userLocations;
+        }
 
         MapEventsOverlay mapEventsOverlay = new MapEventsOverlay(this);
         map.getOverlays().add(0, mapEventsOverlay);
-
         map.invalidate();
     }
 
-    private ArrayList<Park> filterNotToBeNamed(parksWrapper parksWrap) {
-        ArrayList<Park> parks = parksWrap.getParks();
-        ArrayList<Park> toRet = new ArrayList<>();
-        for(int i = 0; i < parks.size(); i++){
-            if(!parks.get(i).getmParkName().contains("NAMED")) {
-                toRet.add(parks.get(i));
-            }
+    @Override
+    public void onResume() {
+        Log.d(TAG,"ParksToDrawSize"+parksToDraw.size());
+        parksToDraw = ((ManagingClass)getApplicationContext()).parksToDraw;
+        if(parksToDraw == null){
+            parksToDraw = allParks;
         }
+
+        RadiusMarkerClusterer newParkMarkers = new RadiusMarkerClusterer(this);
+        newParkMarkers.mTextAnchorU = 0.50f;
+        newParkMarkers.mTextAnchorV = 0.35f;
+        newParkMarkers.setRadius(150);
+        map.getOverlays().remove(parkMarkers);
+        map.getOverlays().add(newParkMarkers);
+        parkMarkers = newParkMarkers;
+        drawMap(newParkMarkers);
+        super.onResume();
+    }
+    private ArrayList<Park> filterNotToBeNamed(ArrayList<Park> parksList) {
+        ArrayList<Park> toRet = new ArrayList<>();
+        for(int i = 0; i < parksList.size(); i++)
+            if(!parksList.get(i).getmParkName().toLowerCase().contains("named"))
+                toRet.add(parksList.get(i));
         return toRet;
     }
 
-    private ArrayList<Park> filterNotToBeNamed(ArrayList<Park> parks) {
-        ArrayList<Park> toRet = new ArrayList<>();
-        for(int i = 0; i < parks.size(); i++){
-            if(!parks.get(i).getmParkName().contains("NAMED")) {
-                toRet.add(parks.get(i));
-            }
-        }
-        return toRet;
-    }
-
-    private parksWrapper readParksData(){
+    private void readParksData(){
         ArrayList<Park> parks = new ArrayList<>();
         InputStream is = getResources().openRawResource(R.raw.parks);
         BufferedReader br = new BufferedReader(
@@ -171,6 +181,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         String line = "";
         String headers = "";
+        Double minLat = null;
+        Double maxLat = null;
+        Double minLong = null;
+        Double maxLong = null;
         try{
             headers=br.readLine();
             while ((line = br.readLine()) != null){
@@ -180,6 +194,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 parkName = WordUtils.capitalizeFully(parkName);
                 double latitude = Double.parseDouble(tokens[9]);
                 double longitude = Double.parseDouble(tokens[10]);
+
+                if(minLat == null || latitude < minLat) {
+                    minLat = latitude;
+                    Log.d("readParksData","minLat:"+minLat);
+                }
+                if(maxLat == null || latitude > maxLat) {
+                    maxLat = latitude;
+                    Log.d("readParksData","maxLat:"+maxLat);
+                }
+                if(minLong == null || longitude < minLong){
+                    minLong = longitude;
+                    Log.d("readParksData","minLong:"+minLong);
+                }
+                if(maxLong == null || longitude > maxLong) {
+                    maxLong = longitude;
+                    Log.d("readParksData","maxLong:"+maxLong);
+                }
+
                 String street = tokens[2] +" "+ tokens[3] +" "+ tokens[4];
                 String status = tokens[8];
 
@@ -196,22 +228,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 amenityAmounts.add(Integer.parseInt(tokens[20]));
 
                 if(!parkName.contains("NAMED")) {
-                    Park tempPark = new Park(parkName, latitude, longitude, street, status, amenityAmounts);
-                    parks.add(tempPark);
+                    if(!parkName.toLowerCase().contains("name")) {
+                        Park tempPark = new Park(parkName, latitude, longitude, street, status, amenityAmounts);
+                        parks.add(tempPark);
+                    }
                 }
             }
         } catch (IOException e){
             Log.wtf(TAG,"Error reading data file on line " + line, e);
             e.printStackTrace();
         }
-        return new parksWrapper(parks);
+        allParks = parks;
+        ((ManagingClass)getApplicationContext()).allParks = allParks;
+
+        //Setting bounding box of scrolling so you cant leave the missisauga area.
+        //Max/Mins are in that order because we are in the north western hemisphere.
+        if(minLat != null)
+            map.setScrollableAreaLimitLatitude(maxLat, minLat,400);
+        if(minLong != null)
+            map.setScrollableAreaLimitLongitude(minLong, maxLong,400);
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.filter, menu);
         this.menu = menu;
-
         return true;
     }
 
@@ -222,9 +263,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (item.getItemId() == R.id.action_filter) {
             Log.d(TAG, "To Filter");
             Intent intent = new Intent(this, FilterActivity.class);
-            intent.putExtra("allParks", allParks);
-            pointsWrapper userWrapper = new pointsWrapper(userLocationMarkers);
-            intent.putExtra("userLocations",userWrapper);
             startActivity(intent);
         }
         return true;
@@ -264,6 +302,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             tempMarker.setIcon(getUserLocationDrawable(userLocationMarkers.size()));
             tempMarker.setOnMarkerClickListener(this);
             userLocationMarkers.add(tempMarker);
+            Location tempLocation = new Location(p);
+            userLocations.add(tempLocation);
+
+            new Thread(tempLocation).start();
+
             map.getOverlays().add(tempMarker);
             map.invalidate();
         }
@@ -297,6 +340,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             for(Marker userMarker:userLocationMarkers){
                 if (userMarker == marker){
                     userLocationMarkers.remove(userMarker);
+                    userLocationMarkers.remove(marker.getPosition());
                     mapView.getOverlays().remove(userMarker);
                     refactorUserLocations();
                     mapView.invalidate();
